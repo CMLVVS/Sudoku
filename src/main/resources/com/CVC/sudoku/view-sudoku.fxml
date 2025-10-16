@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.cvc.sudoku.Controlador"
+            prefHeight="700.0" prefWidth="600.0">
+
+    <VBox alignment="TOP_CENTER" spacing="20.0" AnchorPane.topAnchor="20.0"
+          AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+
+        <Label text="Sudoku 6x6" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+        <GridPane fx:id="tableroGrid" hgap="2.0" vgap="2.0" gridLinesVisible="true">
+            <!-- Se generará dinámicamente -->
+        </GridPane>
+
+        <HBox spacing="10.0" alignment="CENTER">
+            <Button text="Ayuda" fx:id="botonAyuda" style="-fx-font-size: 14px;"/>
+            <Button text="Nuevo Juego" fx:id="botonNuevo" style="-fx-font-size: 14px;"/>
+            <Button text="Verificar" fx:id="botonVerificar" style="-fx-font-size: 14px;"/>
+        </HBox>
+
+        <Label fx:id="etiquetaMensaje" style="-fx-font-size: 14px; -fx-text-fill: red;"/>
+    </VBox>
+</AnchorPane>
