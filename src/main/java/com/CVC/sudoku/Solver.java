@@ -4,7 +4,7 @@ package com.CVC.sudoku;
  * Algoritmo para resolver tableros de Sudoku 6x6
  */
 
-public class solver {
+public class Solver {
 
     /**
      * Resuelve un tablero de Sudoku usando backtracking

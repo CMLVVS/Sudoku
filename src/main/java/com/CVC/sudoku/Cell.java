@@ -2,14 +2,14 @@ package com.CVC.sudoku;
 
 
 
-public class cell {
+public class Cell {
     private int valor;
     private boolean esFija;
     private int fila;
     private int columna;
     private boolean esIncorrecta;
 
-    public cell (int fila, int columna) {
+    public Cell(int fila, int columna) {
         this.fila = fila;
         this.columna = columna;
         this.valor = 0;
@@ -17,7 +17,7 @@ public class cell {
         this.esIncorrecta = false;
     }
 
-    public cell (int fila, int columna, int valor, boolean esFija) {
+    public Cell(int fila, int columna, int valor, boolean esFija) {
         this.fila = fila;
         this.columna = columna;
         this.valor = valor;

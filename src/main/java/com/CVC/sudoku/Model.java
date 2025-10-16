@@ -6,12 +6,12 @@ import java.util.Random;
  * Modelo que contiene la lógica del juego Sudoku 6x6
  */
 
-public class modelo {
+public class Model {
     private int[][] tablero;
     private boolean[][] celdasFijas;
     private Random random;
 
-    public modelo() {
+    public Model() {
         tablero = new int[6][6];
         celdasFijas = new boolean[6][6];
         random = new Random();
