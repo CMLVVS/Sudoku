@@ -22,6 +22,8 @@
             <Button text="Ayuda" fx:id="botonAyuda" style="-fx-font-size: 14px;"/>
             <Button text="Nuevo Juego" fx:id="botonNuevo" style="-fx-font-size: 14px;"/>
             <Button text="Verificar" fx:id="botonVerificar" style="-fx-font-size: 14px;"/>
+            <Button text="Reiniciar" onAction="#manejarReinicio"
+                    style="-fx-font-size: 14px; -fx-background-color: #f39c12; -fx-text-fill: white;"/>
         </HBox>
 
         <Label fx:id="etiquetaMensaje" style="-fx-font-size: 14px; -fx-text-fill: red;"/>
