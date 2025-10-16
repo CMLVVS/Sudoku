@@ -1,26 +1,35 @@
 package com.CVC.sudoku;
 
 /**
- * Algoritmo para resolver tableros de Sudoku 6x6
+ * Solver class for Sudoku puzzles.
+ * Contains algorithms for solving and generating Sudoku boards.
+ *
+ * @author Camilo Vivas Correa
+ * @studentID 202439049
+ * @institution Universidad del Valle
+ * @version 1.0
+ * @since 2025
  */
-
 public class Solver {
 
     /**
-     * Resuelve un tablero de Sudoku usando backtracking
+     * Solves a Sudoku board using backtracking algorithm.
+     *
+     * @param board the 6x6 Sudoku board to solve
+     * @return true if the board was solved successfully, false otherwise
      */
-    public boolean resolver(int[][] tablero) {
-        for (int fila = 0; fila < 6; fila++) {
-            for (int columna = 0; columna < 6; columna++) {
-                if (tablero[fila][columna] == 0) {
+    public boolean solve(int[][] board) {
+        for (int row = 0; row < 6; row++) {
+            for (int col = 0; col < 6; col++) {
+                if (board[row][col] == 0) {
                     for (int num = 1; num <= 6; num++) {
-                        if (esNumeroValido(tablero, fila, columna, num)) {
-                            tablero[fila][columna] = num;
+                        if (isValidNumber(board, row, col, num)) {
+                            board[row][col] = num;
 
-                            if (resolver(tablero)) {
+                            if (solve(board)) {
                                 return true;
                             } else {
-                                tablero[fila][columna] = 0;
+                                board[row][col] = 0;
                             }
                         }
                     }
@@ -32,30 +41,36 @@ public class Solver {
     }
 
     /**
-     * Verifica si un número puede ser colocado en una posición específica
+     * Checks if a number can be placed at a specific position without violating Sudoku rules.
+     *
+     * @param board the current board state
+     * @param row the row index to check
+     * @param col the column index to check
+     * @param num the number to validate
+     * @return true if the number can be placed at the position, false otherwise
      */
-    private boolean esNumeroValido(int[][] tablero, int fila, int columna, int num) {
-        // Verificar fila
+    private boolean isValidNumber(int[][] board, int row, int col, int num) {
+        // Check row
         for (int c = 0; c < 6; c++) {
-            if (tablero[fila][c] == num) {
+            if (board[row][c] == num) {
                 return false;
             }
         }
 
-        // Verificar columna
+        // Check column
         for (int r = 0; r < 6; r++) {
-            if (tablero[r][columna] == num) {
+            if (board[r][col] == num) {
                 return false;
             }
         }
 
-        // Verificar bloque 2x3
-        int bloqueFila = (fila / 2) * 2;
-        int bloqueColumna = (columna / 3) * 3;
+        // Check 2x3 block
+        int blockRow = (row / 2) * 2;
+        int blockCol = (col / 3) * 3;
 
-        for (int i = bloqueFila; i < bloqueFila + 2; i++) {
-            for (int j = bloqueColumna; j < bloqueColumna + 3; j++) {
-                if (tablero[i][j] == num) {
+        for (int i = blockRow; i < blockRow + 2; i++) {
+            for (int j = blockCol; j < blockCol + 3; j++) {
+                if (board[i][j] == num) {
                     return false;
                 }
             }
@@ -65,37 +80,43 @@ public class Solver {
     }
 
     /**
-     * Genera un tablero de Sudoku válido
+     * Generates a valid Sudoku board.
+     *
+     * @return a 6x6 array representing a valid Sudoku board
      */
-    public int[][] generarTablero() {
-        int[][] tablero = new int[6][6];
+    public int[][] generateBoard() {
+        int[][] board = new int[6][6];
 
-        // Llenar la diagonal de bloques 2x3 con números válidos
-        llenarBloque(tablero, 0, 0);
-        llenarBloque(tablero, 2, 0);
-        llenarBloque(tablero, 4, 0);
+        // Fill diagonal 2x3 blocks with valid numbers
+        fillBlock(board, 0, 0);
+        fillBlock(board, 2, 0);
+        fillBlock(board, 4, 0);
 
-        // Resolver el resto del tablero
-        resolver(tablero);
+        // Solve the rest of the board
+        solve(board);
 
-        return tablero;
+        return board;
     }
 
     /**
-     * Llena un bloque 2x3 con números del 1-6 sin repetir
+     * Fills a 2x3 block with numbers 1-6 without repetition.
+     *
+     * @param board the board to fill
+     * @param startRow the starting row of the block
+     * @param startCol the starting column of the block
      */
-    private void llenarBloque(int[][] tablero, int filaInicio, int columnaInicio) {
-        boolean[] usados = new boolean[7]; // índices 1-6
+    private void fillBlock(int[][] board, int startRow, int startCol) {
+        boolean[] used = new boolean[7]; // indices 1-6
 
-        for (int i = filaInicio; i < filaInicio + 2; i++) {
-            for (int j = columnaInicio; j < columnaInicio + 3; j++) {
+        for (int i = startRow; i < startRow + 2; i++) {
+            for (int j = startCol; j < startCol + 3; j++) {
                 int num;
                 do {
                     num = (int) (Math.random() * 6) + 1;
-                } while (usados[num]);
+                } while (used[num]);
 
-                tablero[i][j] = num;
-                usados[num] = true;
+                board[i][j] = num;
+                used[num] = true;
             }
         }
     }

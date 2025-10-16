@@ -3,35 +3,45 @@ package com.CVC.sudoku;
 import java.util.Random;
 
 /**
- * Modelo que contiene la lógica del juego Sudoku 6x6
+ * Model class representing the Sudoku game logic and state.
+ * Handles the game rules, validation, and board management for the 6x6 Sudoku game.
+ *
+ * @author Camilo Vivas Correa
+ * @studentID 202439049
+ * @institution Universidad del Valle
+ * @version 1.0
+ * @since 2025
  */
-
 public class Model {
-    private int[][] tablero;
-    private boolean[][] celdasFijas;
+    private int[][] board;
+    private boolean[][] fixedCells;
     private Random random;
 
+    /**
+     * Constructs a new Sudoku model and initializes the game board.
+     */
     public Model() {
-        tablero = new int[6][6];
-        celdasFijas = new boolean[6][6];
+        board = new int[6][6];
+        fixedCells = new boolean[6][6];
         random = new Random();
-        inicializarJuego();
+        initializeGame();
     }
 
     /**
-     * Inicializa el juego con números predefinidos
+     * Initializes the game board with a predefined starting pattern.
+     * Sets up fixed cells that cannot be modified by the player.
      */
-    private void inicializarJuego() {
-        // Limpiar tablero
+    private void initializeGame() {
+        // Clear board
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                tablero[i][j] = 0;
-                celdasFijas[i][j] = false;
+                board[i][j] = 0;
+                fixedCells[i][j] = false;
             }
         }
 
-        // Patrón inicial válido para Sudoku 6x6
-        int[][] patronInicial = {
+        // Initial game pattern
+        int[][] initialPattern = {
                 {1, 0, 2, 0, 0, 0},
                 {0, 2, 0, 5, 0, 0},
                 {0, 3, 4, 0, 0, 0},
@@ -40,65 +50,65 @@ public class Model {
                 {0, 1, 0, 0, 0, 3}
         };
 
-        // Aplicar patrón y marcar celdas fijas
+        // Apply pattern and mark fixed cells
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                if (patronInicial[i][j] != 0) {
-                    tablero[i][j] = patronInicial[i][j];
-                    celdasFijas[i][j] = true;
+                if (initialPattern[i][j] != 0) {
+                    board[i][j] = initialPattern[i][j];
+                    fixedCells[i][j] = true;
                 }
             }
         }
     }
 
     /**
-     * Establece un valor en una celda si el movimiento es válido
+     * Sets a value in the specified cell if the move is valid.
+     *
+     * @param row the row index (0-5)
+     * @param col the column index (0-5)
+     * @param value the value to set (1-6)
+     * @return true if the move was valid and applied, false otherwise
      */
-    public boolean establecerValor(int fila, int columna, int valor) {
-        if (esMovimientoValido(fila, columna, valor)) {
-            tablero[fila][columna] = valor;
+    public boolean setCellValue(int row, int col, int value) {
+        if (isValidMove(row, col, value)) {
+            board[row][col] = value;
             return true;
         }
         return false;
     }
 
     /**
-     * Verifica si un movimiento es válido según las reglas del Sudoku
+     * Checks if a move is valid according to Sudoku rules.
+     *
+     * @param row the row index of the cell
+     * @param col the column index of the cell
+     * @param value the value to check
+     * @return true if the move is valid, false otherwise
      */
-    public boolean esMovimientoValido(int fila, int columna, int valor) {
-        // Verificar si la celda es fija
-        if (celdasFijas[fila][columna]) {
-            return false;
+    public boolean isValidMove(int row, int col, int value) {
+        // Check if cell is fixed
+        if (fixedCells[row][col]) return false;
+
+        // Check if value is in range
+        if (value < 1 || value > 6) return false;
+
+        // Check row
+        for (int i = 0; i < 6; i++) {
+            if (i != col && board[row][i] == value) return false;
         }
 
-        // Verificar rango
-        if (valor < 1 || valor > 6) {
-            return false;
+        // Check column
+        for (int i = 0; i < 6; i++) {
+            if (i != row && board[i][col] == value) return false;
         }
 
-        // Verificar fila
-        for (int c = 0; c < 6; c++) {
-            if (c != columna && tablero[fila][c] == valor) {
-                return false;
-            }
-        }
+        // Check 2x3 block
+        int blockRow = (row / 2) * 2;
+        int blockCol = (col / 3) * 3;
 
-        // Verificar columna
-        for (int r = 0; r < 6; r++) {
-            if (r != fila && tablero[r][columna] == valor) {
-                return false;
-            }
-        }
-
-        // Verificar bloque 2x3
-        int bloqueFila = (fila / 2) * 2;
-        int bloqueColumna = (columna / 3) * 3;
-
-        for (int i = bloqueFila; i < bloqueFila + 2; i++) {
-            for (int j = bloqueColumna; j < bloqueColumna + 3; j++) {
-                if ((i != fila || j != columna) && tablero[i][j] == valor) {
-                    return false;
-                }
+        for (int i = blockRow; i < blockRow + 2; i++) {
+            for (int j = blockCol; j < blockCol + 3; j++) {
+                if (i != row && j != col && board[i][j] == value) return false;
             }
         }
 
@@ -106,28 +116,34 @@ public class Model {
     }
 
     /**
-     * Obtiene una sugerencia para una celda vacía
+     * Provides a valid suggestion for an empty cell.
+     *
+     * @param row the row index of the cell
+     * @param col the column index of the cell
+     * @return a valid number suggestion, or 0 if no valid suggestion exists
      */
-    public int obtenerSugerencia(int fila, int columna) {
+    public int getHelp(int row, int col) {
         for (int num = 1; num <= 6; num++) {
-            if (esMovimientoValido(fila, columna, num)) {
+            if (isValidMove(row, col, num)) {
                 return num;
             }
         }
-        return 0; // No hay sugerencia válida
+        return 0;
     }
 
     /**
-     * Verifica si el tablero está completo y correcto
+     * Checks if the board is completely filled and follows all Sudoku rules.
+     *
+     * @return true if the board is complete and correct, false otherwise
      */
-    public boolean estaCompletoYCorrecto() {
+    public boolean isCompleteAndCorrect() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                if (tablero[i][j] == 0) {
-                    return false; // Hay celdas vacías
+                if (board[i][j] == 0) {
+                    return false; // Empty cells
                 }
-                if (!esMovimientoValido(i, j, tablero[i][j]) && !celdasFijas[i][j]) {
-                    return false; // Hay números inválidos
+                if (!isValidMove(i, j, board[i][j]) && !fixedCells[i][j]) {
+                    return false; // Invalid numbers
                 }
             }
         }
@@ -135,12 +151,14 @@ public class Model {
     }
 
     /**
-     * Verifica si el tablero está completo
+     * Checks if all cells in the board are filled (regardless of correctness).
+     *
+     * @return true if all cells have values, false otherwise
      */
-    public boolean estaCompleto() {
+    public boolean isComplete() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                if (tablero[i][j] == 0) {
+                if (board[i][j] == 0) {
                     return false;
                 }
             }
@@ -148,27 +166,45 @@ public class Model {
         return true;
     }
 
-    // Getters
-    public int obtenerValor(int fila, int columna) {
-        return tablero[fila][columna];
-    }
-
-    public boolean esCeldaFija(int fila, int columna) {
-        return celdasFijas[fila][columna];
-    }
-
-    public int[][] obtenerTablero() {
-        return tablero.clone();
+    /**
+     * Gets the value of a specific cell.
+     *
+     * @param row the row index
+     * @param col the column index
+     * @return the value at the specified cell (0 for empty)
+     */
+    public int getCellValue(int row, int col) {
+        return board[row][col];
     }
 
     /**
-     * Reinicia el tablero, manteniendo solo las celdas fijas
+     * Checks if a cell is fixed (pre-filled and non-editable).
+     *
+     * @param row the row index
+     * @param col the column index
+     * @return true if the cell is fixed, false otherwise
      */
-    public void reiniciarTablero() {
+    public boolean isCellFixed(int row, int col) {
+        return fixedCells[row][col];
+    }
+
+    /**
+     * Gets a copy of the current game board.
+     *
+     * @return a 6x6 array representing the current board state
+     */
+    public int[][] getBoard() {
+        return board.clone();
+    }
+
+    /**
+     * Resets the board by clearing all non-fixed cells.
+     */
+    public void resetBoard() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                if (!celdasFijas[i][j]) {
-                    tablero[i][j] = 0;
+                if (!fixedCells[i][j]) {
+                    board[i][j] = 0;
                 }
             }
         }

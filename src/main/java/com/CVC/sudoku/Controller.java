@@ -6,7 +6,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 /**
- * Controlador principal del juego Sudoku
+ * Controller class for the Sudoku game interface.
+ * Handles user interactions, manages the game state, and coordinates between
+ * the view (FXML) and the model (game logic).
+ *
+ * @author Camilo Vivas Correa
+ * @studentID 202439049
+ * @institution Universidad del Valle
+ * @version 1.0
+ * @since 2025
  */
 public class Controller {
     @FXML
@@ -19,17 +27,22 @@ public class Controller {
     private TextField[][] textFields;
     private Solver solver;
 
+    /**
+     * Initializes the controller after the FXML fields have been injected.
+     * Sets up the game model, solver, and initializes the game board.
+     */
     @FXML
     public void initialize() {
         model = new Model();
         solver = new Solver();
         textFields = new TextField[6][6];
         initializeBoard();
-        messageLabel.setText("¡Bienvenido al Sudoku 6x6! Escribe números del 1 al 6.");
+        messageLabel.setText("Welcome to Sudoku 6x6! Enter numbers from 1 to 6.");
     }
 
     /**
-     * Inicializa la interfaz gráfica del tablero
+     * Initializes the game board UI by creating and configuring text fields
+     * for each cell in the 6x6 grid.
      */
     private void initializeBoard() {
         sudokuGrid.getChildren().clear();
@@ -44,23 +57,26 @@ public class Controller {
     }
 
     /**
-     * Crea un campo de texto para una celda del tablero
+     * Creates and configures a text field for a specific cell in the Sudoku grid.
+     *
+     * @param row the row index of the cell (0-5)
+     * @param col the column index of the cell (0-5)
+     * @return the configured TextField ready for user input
      */
     private TextField createTextField(int row, int col) {
         TextField field = new TextField();
         field.setPrefSize(50, 50);
         field.setStyle("-fx-font-size: 18; -fx-alignment: center;");
 
-        int value = model.getValue(row, col);
+        int value = model.getCellValue(row, col);
         if (value != 0) {
             field.setText(String.valueOf(value));
-            if (model.isFixedCell(row, col)) {
+            if (model.isCellFixed(row, col)) {
                 field.setStyle("-fx-font-size: 18; -fx-alignment: center; -fx-background-color: #f0f0f0; -fx-font-weight: bold;");
                 field.setEditable(false);
             }
         }
 
-        // Manejar eventos de entrada
         final int currentRow = row;
         final int currentCol = col;
 
@@ -72,50 +88,58 @@ public class Controller {
     }
 
     /**
-     * Maneja la entrada del usuario en una celda
+     * Handles user input in a specific cell, validating the input and updating the model.
+     *
+     * @param row the row index of the cell being edited
+     * @param col the column index of the cell being edited
+     * @param input the text input from the user
      */
     private void handleUserInput(int row, int col, String input) {
-        if (model.isFixedCell(row, col)) {
-            return; // No permitir editar celdas fijas
+        if (model.isCellFixed(row, col)) {
+            return; // Prevent editing fixed cells
         }
 
         if (input.isEmpty()) {
-            // Celda vaciada
-            model.setValue(row, col, 0);
+            // Cell cleared
+            model.setCellValue(row, col, 0);
             updateCellStyle(row, col, "normal");
         } else {
             try {
                 int value = Integer.parseInt(input);
                 if (value >= 1 && value <= 6) {
-                    if (model.setValue(row, col, value)) {
-                        // Movimiento válido
+                    if (model.setCellValue(row, col, value)) {
+                        // Valid move
                         updateCellStyle(row, col, "valid");
                         messageLabel.setText("");
 
-                        // Verificar si el juego está completo
+                        // Check if game is complete
                         if (model.isCompleteAndCorrect()) {
-                            messageLabel.setText("¡Felicidades! ¡Has completado el Sudoku correctamente!");
+                            messageLabel.setText("Congratulations! You have completed the Sudoku correctly!");
                         }
                     } else {
-                        // Movimiento inválido
+                        // Invalid move
                         updateCellStyle(row, col, "invalid");
-                        messageLabel.setText("Número inválido. Verifica fila, columna y bloque.");
+                        messageLabel.setText("Invalid number. Check row, column and block.");
                     }
                 } else {
-                    // Número fuera de rango
+                    // Number out of range
                     textFields[row][col].setText("");
-                    messageLabel.setText("Solo se permiten números del 1 al 6.");
+                    messageLabel.setText("Only numbers from 1 to 6 are allowed.");
                 }
             } catch (NumberFormatException e) {
-                // Entrada no numérica
+                // Non-numeric input
                 textFields[row][col].setText("");
-                messageLabel.setText("Solo se permiten números.");
+                messageLabel.setText("Only numbers are allowed.");
             }
         }
     }
 
     /**
-     * Actualiza el estilo visual de una celda
+     * Updates the visual style of a cell based on its state.
+     *
+     * @param row the row index of the cell
+     * @param col the column index of the cell
+     * @param type the type of styling to apply ("valid", "invalid", "suggestion", or "normal")
      */
     private void updateCellStyle(int row, int col, String type) {
         String baseStyle = "-fx-font-size: 18; -fx-alignment: center;";
@@ -136,59 +160,72 @@ public class Controller {
         }
     }
 
+    /**
+     * Provides help to the user by suggesting a valid number for an empty cell.
+     * Finds the first empty cell and fills it with a valid suggestion.
+     */
     @FXML
     private void handleHelp() {
-        // Buscar la primera celda vacía no fija
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
-                if (model.getValue(row, col) == 0 && !model.isFixedCell(row, col)) {
-                    int suggestion = model.getSuggestion(row, col);
+                if (model.getCellValue(row, col) == 0 && !model.isCellFixed(row, col)) {
+                    int suggestion = model.getHelp(row, col);
                     if (suggestion != 0) {
-                        model.setValue(row, col, suggestion);
+                        model.setCellValue(row, col, suggestion);
                         textFields[row][col].setText(String.valueOf(suggestion));
                         updateCellStyle(row, col, "suggestion");
-                        messageLabel.setText("Sugerencia aplicada en fila " + (row + 1) + ", columna " + (col + 1));
+                        messageLabel.setText("Suggestion applied at row " + (row + 1) + ", column " + (col + 1));
                     } else {
-                        messageLabel.setText("No se puede encontrar una sugerencia para esta celda.");
+                        messageLabel.setText("Cannot find a valid suggestion for this cell.");
                     }
                     return;
                 }
             }
         }
-        messageLabel.setText("¡No hay celdas vacías para sugerir! El tablero puede estar completo.");
+        messageLabel.setText("No empty cells to suggest! The board might be complete.");
     }
 
+    /**
+     * Starts a new game by resetting the model and reinitializing the board.
+     */
     @FXML
     private void handleNewGame() {
         model = new Model();
         initializeBoard();
-        messageLabel.setText("Nuevo juego iniciado. ¡Buena suerte!");
+        messageLabel.setText("New game started. Good luck!");
     }
 
+    /**
+     * Verifies the current state of the board and provides feedback to the user.
+     */
     @FXML
     private void handleVerify() {
         if (model.isComplete()) {
             if (model.isCompleteAndCorrect()) {
-                messageLabel.setText("¡Correcto! El tablero está completo y válido.");
+                messageLabel.setText("Correct! The board is complete and valid.");
             } else {
-                messageLabel.setText("El tablero está completo pero contiene errores.");
+                messageLabel.setText("The board is complete but contains errors.");
             }
         } else {
-            messageLabel.setText("El tablero no está completo. Sigue jugando.");
+            messageLabel.setText("The board is not complete. Keep playing.");
         }
     }
 
+    /**
+     * Resets the board while keeping the fixed cells intact.
+     * Clears all user-entered values from non-fixed cells.
+     */
     @FXML
     private void handleReset() {
         model.resetBoard();
         for (int row = 0; row < 6; row++) {
             for (int col = 0; col < 6; col++) {
-                if (!model.isFixedCell(row, col)) {
+                if (!model.isCellFixed(row, col)) {
                     textFields[row][col].setText("");
                     updateCellStyle(row, col, "normal");
                 }
             }
         }
-        messageLabel.setText("Tablero reiniciado. Se conservan las celdas fijas.");
+        messageLabel.setText("Board reset. Fixed cells are preserved.");
     }
 }

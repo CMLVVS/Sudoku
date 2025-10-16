@@ -4,6 +4,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
+<!--
+    FXML file defining the Sudoku game interface.
+    Designed for a 6x6 Sudoku game with help and control features.
+
+    @author Camilo Vivas Correa
+    @studentID 202439049
+    @institution Universidad del Valle
+    @version 1.0
+    @since 2025
+-->
 <AnchorPane xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.CVC.sudoku.Controller"
@@ -14,26 +24,25 @@
           AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="20.0"
           AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
 
-        <Label text="Sudoku 6x6"
-               style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 2, 0.5, 1, 1);"/>
+        <Label text="Sudoku 6x6 - Universidad del Valle"
+               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-        <GridPane fx:id="sudokuGrid" hgap="1.0" vgap="1.0"
-                  style="-fx-background-color: white; -fx-border-color: #34495e; -fx-border-width: 3px; -fx-border-radius: 5px; -fx-padding: 5px;">
-            <!-- El tablero 6x6 se generará dinámicamente -->
+        <GridPane fx:id="sudokuGrid" hgap="2.0" vgap="2.0"
+                  style="-fx-background-color: white; -fx-border-color: #34495e; -fx-border-width: 2px; -fx-padding: 5px;">
+            <!-- The 6x6 board will be generated dynamically -->
         </GridPane>
 
-        <HBox spacing="15.0" alignment="CENTER">
+        <HBox spacing="10.0" alignment="CENTER">
             <Button text="Help" onAction="#handleHelp"
-                    style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #3498db; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
+                    style="-fx-font-size: 14px; -fx-background-color: #3498db; -fx-text-fill: white;"/>
             <Button text="New Game" onAction="#handleNewGame"
-                    style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #2ecc71; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
+                    style="-fx-font-size: 14px; -fx-background-color: #2ecc71; -fx-text-fill: white;"/>
             <Button text="Verify" onAction="#handleVerify"
-                    style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #e74c3c; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
+                    style="-fx-font-size: 14px; -fx-background-color: #e74c3c; -fx-text-fill: white;"/>
             <Button text="Reset" onAction="#handleReset"
-                    style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #f39c12; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
+                    style="-fx-font-size: 14px; -fx-background-color: #f39c12; -fx-text-fill: white;"/>
         </HBox>
 
-        <Label fx:id="messageLabel"
-               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #c0392b; -fx-background-color: #f9ebea; -fx-padding: 10px; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-alignment: center; -fx-min-width: 400px;"/>
+        <Label fx:id="messageLabel" style="-fx-font-size: 14px; -fx-text-fill: red;"/>
     </VBox>
 </AnchorPane>
